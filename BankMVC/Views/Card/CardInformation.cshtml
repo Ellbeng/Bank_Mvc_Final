@@ -1,0 +1,84 @@
+﻿@model BankMVC.DTO.TransactionDto
+@{
+    ViewData["Title"] = "CardInformation";
+}
+
+<form id="card-form">
+    <div class="form-group">
+        <label for="card-number">Card Number</label>
+        <input type="text" class="form-control" id="card-number" name="card-number" placeholder="Enter card number">
+    </div>
+    <div class="form-group">
+        <label for="expiration-month">Expiration Month</label>
+        <input type="text" class="form-control" id="expiration-month" name="expiration-month" placeholder="MM">
+    </div>
+    <div class="form-group">
+        <label for="expiration-year">Expiration Year</label>
+        <input type="text" class="form-control" id="expiration-year" name="expiration-year" placeholder="YYYY">
+    </div>
+    <div class="form-group">
+        <label for="cvv">CVV</label>
+        <input type="text" class="form-control" id="cvv" name="cvv" placeholder="Enter CVV">
+    </div>
+@*    <div class="form-group">
+       
+        <input type="hidden" class="form-control" id="amount" value="@Model.Amount">
+    </div>
+
+    <div class="form-group">
+
+        <input type="hidden" class="form-control" id="currency" value="@Model.Currency">
+    </div>*@
+
+    <button type="button" id="btnSubmit">Submit</button>
+</form>
+
+@section scripts{
+<script>
+    $(document).ready(function () {
+
+        $("#btnSubmit").click(function () {
+                var cardForm = {
+                    CardNumber: $("#card-number").val(),                   
+                    ExpirationMonth: $("#expiration-month").val(),
+                    ExpirationYear: $("#expiration-year").val(),
+                    CVV: $("#cvv").val()
+
+                };
+                const urlParams = new URLSearchParams(window.location.search);
+                const myParam = urlParams.get('myParam');
+
+                var transaction = {
+                    Amount: urlParams.get('amount'),
+                    PaymentType: urlParams.get('paymentType'),
+                    Currency: urlParams.get('currency'),
+                    CreateDate: urlParams.get('createDate'),
+                    Status: "3",
+                    Id: urlParams.get('id'),
+                    CallbackUrl: urlParams.get('callbackUrl')
+                   
+                };
+            
+
+        $.ajax({
+            url: "/Card/CardForm", // Controller action method URL
+            type: "POST",
+            dataType: "json",
+            
+                    data: {card:cardForm, transaction: transaction},
+                    success: function (data) {
+                        var callBackUrl = data.callBackUrl;
+                        console.log("Bank form fill URL: " + callBackUrl);
+                        alert("Transaction added successfully!");
+                        
+                        // Redirect the user to the bank form fill link or handle it as needed
+                        window.location.replace(callBackUrl);
+                    },
+            error: function (xhr) {
+               alert("Error adding transaction: " + xhr.responseText);
+            }
+           });
+        });
+    });
+</script>
+}
